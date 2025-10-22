@@ -11,6 +11,91 @@ const BIDDER_CODE = 'allegro';
 const BIDDER_URL = 'https://dsp.allegro.pl/prebid';
 const GVLID = 1493;
 
+function convertExtensionFields(request) {
+  if (request.imp) {
+    request.imp.forEach(imp => {
+      if (imp.banner?.ext) {
+        const extCopy = {...imp.banner.ext};
+        delete imp.banner.ext;
+        imp.banner['[com.google.doubleclick.banner_ext]'] = extCopy;
+      }
+      if (imp.ext) {
+        const extCopy = {...imp.ext};
+        delete imp.ext;
+        imp['[com.google.doubleclick.imp]'] = extCopy;
+      }
+    });
+  }
+
+  if (request.app?.ext) {
+    const extCopy = {...request.app.ext};
+    delete request.app.ext;
+    request.app['[com.google.doubleclick.app]'] = extCopy;
+  }
+
+  if (request.site?.ext) {
+    const extCopy = {...request.site.ext};
+    delete request.site.ext;
+    request.site['[com.google.doubleclick.site]'] = extCopy;
+  }
+
+  if (request.site?.publisher?.ext) {
+    const extCopy = {...request.site.publisher.ext};
+    delete request.site.publisher.ext;
+    request.site.publisher['[com.google.doubleclick.publisher]'] = extCopy;
+  }
+
+  if (request.user?.ext) {
+    const extCopy = {...request.user.ext};
+    delete request.user.ext;
+    request.user['[com.google.doubleclick.user]'] = extCopy;
+  }
+
+  if (request.user?.data) {
+    request.user.data.forEach(data => {
+      if (data.ext) {
+        const extCopy = {...data.ext};
+        delete data.ext;
+        data['[com.google.doubleclick.data]'] = extCopy;
+      }
+    });
+  }
+
+  if (request.device?.ext) {
+    const extCopy = {...request.device.ext};
+    delete request.device.ext;
+    request.device['[com.google.doubleclick.device]'] = extCopy;
+  }
+
+  if (request.device?.geo?.ext) {
+    const extCopy = {...request.device.geo.ext};
+    delete request.device.geo.ext;
+    request.device.geo['[com.google.doubleclick.geo]'] = extCopy;
+  }
+
+  if (request.regs?.ext) {
+    if (request.regs?.ext?.gdpr !== 'undefined') {
+      request.regs.ext.gdpr = request.regs.ext.gdpr === 1;
+    }
+
+    const extCopy = {...request.regs.ext};
+    delete request.regs.ext;
+    request.regs['[com.google.doubleclick.regs]'] = extCopy;
+  }
+
+  if (request.source?.ext) {
+    const extCopy = {...request.source.ext};
+    delete request.source.ext;
+    request.source['[com.google.doubleclick.source]'] = extCopy;
+  }
+
+  if (request.ext) {
+    const extCopy = {...request.ext};
+    delete request.ext;
+    request['[com.google.doubleclick.bid_request]'] = extCopy;
+  }
+}
+
 const converter = ortbConverter({
   context: {
     mediaType: BANNER,
@@ -42,95 +127,13 @@ const converter = ortbConverter({
       request.test = request.test === 1;
     }
 
-    // Apply ext mapping transformations
-    if (request.imp) {
-      request.imp.forEach(imp => {
-        if (imp.banner?.ext) {
-          const extCopy = {...imp.banner.ext};
-          delete imp.banner.ext;
-          imp.banner['[com.google.doubleclick.banner_ext]'] = extCopy;
-        }
-        if (imp.ext) {
-          const extCopy = {...imp.ext};
-          delete imp.ext;
-          imp['[com.google.doubleclick.imp]'] = extCopy;
-        }
-      });
-    }
-
-    if (request.app?.ext) {
-      const extCopy = {...request.app.ext};
-      delete request.app.ext;
-      request.app['[com.google.doubleclick.app]'] = extCopy;
-    }
-
-    if (request.site?.ext) {
-      const extCopy = {...request.site.ext};
-      delete request.site.ext;
-      request.site['[com.google.doubleclick.site]'] = extCopy;
-    }
-
-    if (request.site?.publisher?.ext) {
-      const extCopy = {...request.site.publisher.ext};
-      delete request.site.publisher.ext;
-      request.site.publisher['[com.google.doubleclick.publisher]'] = extCopy;
-    }
-
-    if (request.user?.ext) {
-      const extCopy = {...request.user.ext};
-      delete request.user.ext;
-      request.user['[com.google.doubleclick.user]'] = extCopy;
-    }
-
-    if (request.user?.data) {
-      request.user.data.forEach(data => {
-        if (data.ext) {
-          const extCopy = {...data.ext};
-          delete data.ext;
-          data['[com.google.doubleclick.data]'] = extCopy;
-        }
-      });
-    }
-
-    if (request.device?.ext) {
-      const extCopy = {...request.device.ext};
-      delete request.device.ext;
-      request.device['[com.google.doubleclick.device]'] = extCopy;
-    }
-
-    if (request.device?.geo?.ext) {
-      const extCopy = {...request.device.geo.ext};
-      delete request.device.geo.ext;
-      request.device.geo['[com.google.doubleclick.geo]'] = extCopy;
-    }
-
-    if (request.regs?.ext) {
-      if (request.regs?.ext?.gdpr !== 'undefined') {
-        request.regs.ext.gdpr = request.regs.ext.gdpr === 1;
-      }
-
-      const extCopy = {...request.regs.ext};
-      delete request.regs.ext;
-      request.regs['[com.google.doubleclick.regs]'] = extCopy;
-    }
-
-    if (request.source?.ext) {
-      const extCopy = {...request.source.ext};
-      delete request.source.ext;
-      request.source['[com.google.doubleclick.source]'] = extCopy;
-    }
-
-    if (request.ext) {
-      const extCopy = {...request.ext};
-      delete request.ext;
-      request['[com.google.doubleclick.bid_request]'] = extCopy;
+    // by default, we convert extension fields unless the config explicitly disables it
+    const convertExtConfig = config.getConfig('allegro.convertExtensionFields');
+    if (convertExtConfig === undefined || convertExtConfig === true) {
+      convertExtensionFields(request);
     }
 
     return request;
-  },
-  bidResponse(buildBidResponse, bid, context) {
-    const bidResponse = buildBidResponse(bid, context);
-    return bidResponse;
   }
 })
 
