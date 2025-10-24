@@ -183,7 +183,7 @@ function replaceMacros(url, bid) {
     .replace(/\${AUCTION_BID_IMP_ID}/g, bid.impid || bid.impId || bid.adUnitCode || '')
     .replace(/\${AUCTION_SEAT_ID}/g, bid.seat || bid.seatId || '')
     .replace(/\${AUCTION_AD_ID}/g, bid.adId || bid.creativeId || '')
-    .replace(/\${AUCTION_PRICE}/g, bid.cpm ?? '')
+    .replace(/\${AUCTION_PRICE}/g, bid.cpm ?? '') // should we handle macro params? if so it should be encrypted
     .replace(/\${CURRENCY}/g, bid.currency || '')
     .replace(/\${CREATIVE_ID}/g, bid.creativeId || '')
     .replace(/\${ADUNIT_CODE}/g, bid.adUnitCode || '');

@@ -63,7 +63,8 @@ var adUnits = [{
 
 ## Extension Field Conversion
 
-The adapter automatically converts OpenRTB extension fields to Google DoubleClick format when `allegro.convertExtensionFields` is set to `true` (default behavior). This conversion affects the following objects:
+The adapter automatically converts OpenRTB extension fields to Google DoubleClick format, to enable correct json unmarshalling based on proto messages.
+When `allegro.convertExtensionFields` is set to `true` (default behavior). This conversion affects the following objects:
 
 - Banner extensions (`banner.ext` → `banner.[com.google.doubleclick.banner_ext]`)
 - Impression extensions (`imp.ext` → `imp.[com.google.doubleclick.imp]`)
