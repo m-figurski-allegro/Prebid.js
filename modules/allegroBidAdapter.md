@@ -21,7 +21,7 @@ The Allegro adapter supports the following configuration options:
 
 | Name                          | Scope    | Type    | Description                                                                                  | Default                            |
 |-------------------------------|----------|---------|----------------------------------------------------------------------------------------------|------------------------------------|
-| `allegro.bidderUrl`           | optional | String  | Custom bidder endpoint URL                                                                   | `https://dsp.allegro.pl/prebid`    |
+| `allegro.bidderUrl`           | optional | String  | Custom bidder endpoint URL                                                                   | `https://dsp.allegro.com/bid`      |
 | `allegro.convertExtensionFields` | optional | Boolean | Enable/disable conversion of OpenRTB extension fields to DoubleClick format                | `true`                             |
 | `allegro.triggerImpressionPixel` | optional | Boolean | Enable/disable triggering impression tracking pixels on bid won event                      | `false`                            |
 
@@ -30,7 +30,7 @@ The Allegro adapter supports the following configuration options:
 ```javascript
 pbjs.setConfig({
   allegro: {
-    bidderUrl: 'https://dsp.allegro.pl/prebid', // optional
+  bidderUrl: 'https://dsp.allegro.com/bid', // optional
     convertExtensionFields: true, // optional, default is true
     triggerImpressionPixel: true  // optional, default is false
   }
@@ -91,17 +91,7 @@ pbjs.setConfig({
 
 ## Impression Tracking
 
-When `allegro.triggerImpressionPixel` is enabled, the adapter will automatically fire impression tracking pixels when a bid wins. The adapter supports macro replacement in tracking URLs for the following macros:
-
-- `${AUCTION_ID}` - Auction ID
-- `${AUCTION_BID_ID}` - Bid ID
-- `${AUCTION_BID_IMP_ID}` - Impression ID
-- `${AUCTION_SEAT_ID}` - Seat ID
-- `${AUCTION_AD_ID}` - Ad ID
-- `${AUCTION_PRICE}` - Bid price (CPM)
-- `${CURRENCY}` - Currency code
-- `${CREATIVE_ID}` - Creative ID
-- `${ADUNIT_CODE}` - Ad unit code
+When `allegro.triggerImpressionPixel` is enabled, the adapter will automatically fire the provided `burl` (billing/impression) tracking URL when a bid wins.
 
 # Technical Details
 

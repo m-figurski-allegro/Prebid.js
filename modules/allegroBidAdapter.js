@@ -8,7 +8,7 @@ import {config} from '../src/config.js';
 import {triggerPixel} from '../src/utils.js';
 
 const BIDDER_CODE = 'allegro';
-const BIDDER_URL = 'https://dsp.allegro.pl/prebid';
+const BIDDER_URL = 'https://dsp.allegro.com/bid';
 const GVLID = 1493;
 
 function convertExtensionFields(request) {
@@ -161,32 +161,17 @@ export const spec = {
 
   interpretResponse: function (response, request) {
     if (!response.body) return;
-    let bids = converter.fromORTB({response: response.body, request: request.data}).bids;
-    return bids;
+    return converter.fromORTB({response: response.body, request: request.data}).bids;
   },
 
   onBidWon: function (bid) {
     const triggerImpressionPixel = config.getConfig('allegro.triggerImpressionPixel');
 
     if (triggerImpressionPixel && bid.burl) {
-      triggerPixel(replaceMacros(bid.burl, bid));
+      triggerPixel(bid.burl);
     }
   }
 
-}
-
-function replaceMacros(url, bid) {
-  if (!url) return url;
-  return url
-    .replace(/\${AUCTION_ID}/g, bid.auctionId || bid.requestId || '')
-    .replace(/\${AUCTION_BID_ID}/g, bid.requestId || bid.bidId || '')
-    .replace(/\${AUCTION_BID_IMP_ID}/g, bid.impid || bid.impId || bid.adUnitCode || '')
-    .replace(/\${AUCTION_SEAT_ID}/g, bid.seat || bid.seatId || '')
-    .replace(/\${AUCTION_AD_ID}/g, bid.adId || bid.creativeId || '')
-    .replace(/\${AUCTION_PRICE}/g, bid.cpm ?? '') // should we handle macro params? if so it should be encrypted
-    .replace(/\${CURRENCY}/g, bid.currency || '')
-    .replace(/\${CREATIVE_ID}/g, bid.creativeId || '')
-    .replace(/\${ADUNIT_CODE}/g, bid.adUnitCode || '');
 }
 
 registerBidder(spec);

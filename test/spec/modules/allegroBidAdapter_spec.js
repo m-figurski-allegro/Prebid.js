@@ -56,7 +56,7 @@ describe('Allegro Bid Adapter', () => {
       const bidderRequest = buildBidderRequest(bidRequests);
       const req = spec.buildRequests(bidRequests, bidderRequest);
       expect(req.method).to.equal('POST');
-      expect(req.url).to.match(/https:\/\/dsp\.allegro\.pl\/prebid/);
+      expect(req.url).to.equal('https://dsp.allegro.com/bid');
       expect(req.options.contentType).to.equal('application/json');
       expect(req.data).to.exist;
       expect(req.data.imp).to.be.an('array').with.lengthOf(1);
@@ -194,7 +194,7 @@ describe('Allegro Bid Adapter', () => {
       expect(spec.onBidWon({})).to.equal(undefined);
     });
 
-    it('fires impression pixel with macro replacement when enabled', () => {
+    it('fires impression pixel with provided burl when enabled', () => {
       const pixelSpy = sinon.spy();
       // stub config and utils.triggerPixel; need to stub imported triggerPixel via utils module
       configStub = sinon.stub(config, 'getConfig').callsFake((key) => {
@@ -207,7 +207,7 @@ describe('Allegro Bid Adapter', () => {
       const originalTrigger = utils.triggerPixel;
       sinon.stub(utils, 'triggerPixel').callsFake(pixelSpy);
       const bid = {
-        burl: 'https://example.com/win?aid=${AUCTION_ID}&bid=${AUCTION_BID_ID}&imp=${AUCTION_BID_IMP_ID}&price=${AUCTION_PRICE}&cur=${CURRENCY}',
+        burl: 'https://example.com/win?aid=auction_id&bid=bid_id&imp=imp_id&price=0.91&cur=USD',
         auctionId: 'auc-1',
         requestId: 'req-1',
         impid: 'imp-1',
@@ -217,11 +217,7 @@ describe('Allegro Bid Adapter', () => {
       spec.onBidWon(bid);
       expect(pixelSpy.calledOnce).to.equal(true);
       const calledWith = pixelSpy.getCall(0).args[0];
-      expect(calledWith).to.include('aid=auc-1');
-      expect(calledWith).to.include('bid=req-1');
-      expect(calledWith).to.include('imp=imp-1');
-      expect(calledWith).to.include('price=0.91');
-      expect(calledWith).to.include('cur=USD');
+      expect(calledWith).to.equal(bid.burl);
       // restore original triggerPixel
       utils.triggerPixel.restore();
       utils.triggerPixel = originalTrigger;
