@@ -64,8 +64,8 @@ describe('Allegro Bid Adapter', () => {
 
     it('respects custom bidder URL from config', () => {
       configStub = sinon.stub(config, 'getConfig').callsFake((key) => {
-        expect(key).to.equal('allegro.bidderUrl');
-        return 'https://override.endpoint/prebid';
+        if (key === 'allegro.bidderUrl') return 'https://override.endpoint/prebid';
+        return undefined;
       });
       let bidRequest = [buildBidRequest({})];
       const req = spec.buildRequests(bidRequest, buildBidderRequest(bidRequest));
