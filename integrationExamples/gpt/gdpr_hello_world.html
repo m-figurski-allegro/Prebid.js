@@ -23,14 +23,17 @@
           code: 'div-gpt-ad-1460505748561-0',
           mediaTypes: {
             banner: {
-              sizes: [[300, 250], [300,400]]
+              sizes: [[300, 250], [300,600]]
             }
           },
 
           // Replace this object to test a new Adapter!
-        bids: [{
-            bidder: 'allegro',
-        }]
+          bids: [{
+            bidder: 'appnexus',
+            params: {
+              placementId: 13144370
+            }
+          }]
 
         }];
 
@@ -48,29 +51,10 @@
 
         pbjs.que.push(function() {
           pbjs.addAdUnits(adUnits);
-            pbjs.setConfig({
-              debug: true,
-              allegro: {
-                  bidderUrl: "http://localhost:9180/bid",
-                  triggerImpressionPixel: true,
-                  convertExtensionFields: true
-              },
-              realTimeData: {
-                  auctionDelay: 200,
-                  dataProviders: [{
-                      "name": "geolocation",
-                      "waitForIt": true,
-                      "params": {
-                          "requestPermission": true
-                      }
-                  }]
-              },
+          pbjs.setConfig({
             consentManagement: {
-              gdpr: {
-                  cmpApi: 'iab',
-                  timeout: 8000,
-                  allowAuctionWithoutConsent: false
-              },
+              cmpApi: 'iab',
+              timeout: 5000
             },
             pubcid: {
               enable: false
