@@ -30,7 +30,7 @@ The Allegro adapter supports the following configuration options:
 ```javascript
 pbjs.setConfig({
   allegro: {
-  bidderUrl: 'https://dsp.allegro.com/bid', // optional
+    bidderUrl: 'https://dsp.allegro.com/bid', // optional
     convertExtensionFields: true, // optional, default is true
     triggerImpressionPixel: true  // optional, default is false
   }
@@ -60,35 +60,6 @@ var adUnits = [{
 ```
 
 # Features
-
-## Extension Field Conversion
-
-The adapter automatically converts OpenRTB extension fields to Google DoubleClick format, to enable correct json unmarshalling based on proto messages.
-When `allegro.convertExtensionFields` is set to `true` (default behavior). This conversion affects the following objects:
-
-- Banner extensions (`banner.ext` → `banner.[com.google.doubleclick.banner_ext]`)
-- Impression extensions (`imp.ext` → `imp.[com.google.doubleclick.imp]`)
-- App extensions (`app.ext` → `app.[com.google.doubleclick.app]`)
-- Site extensions (`site.ext` → `site.[com.google.doubleclick.site]`)
-- Publisher extensions (`site.publisher.ext` → `site.publisher.[com.google.doubleclick.publisher]`)
-- User extensions (`user.ext` → `user.[com.google.doubleclick.user]`)
-- Data extensions (`user.data[].ext` → `user.data[].[com.google.doubleclick.data]`)
-- Device extensions (`device.ext` → `device.[com.google.doubleclick.device]`)
-- Geo extensions (`device.geo.ext` → `device.geo.[com.google.doubleclick.geo]`)
-- Regulations extensions (`regs.ext` → `regs.[com.google.doubleclick.regs]`)
-- Source extensions (`source.ext` → `source.[com.google.doubleclick.source]`)
-- Bid request extensions (`ext` → `[com.google.doubleclick.bid_request]`)
-
-To disable this conversion:
-
-```javascript
-pbjs.setConfig({
-  allegro: {
-    convertExtensionFields: false
-  }
-});
-```
-
 ## Impression Tracking
 
 When `allegro.triggerImpressionPixel` is enabled, the adapter will automatically fire the provided `burl` (billing/impression) tracking URL when a bid wins.

@@ -39,7 +39,7 @@ describe('Allegro Bid Adapter', () => {
 
   it('should export the expected code and media types', () => {
     expect(spec.code).to.equal('allegro');
-    expect(spec.supportedMediaTypes).to.deep.equal(['banner']);
+    expect(spec.supportedMediaTypes).to.deep.equal(['banner', 'video', 'native']);
   });
 
   describe('isBidRequestValid', () => {

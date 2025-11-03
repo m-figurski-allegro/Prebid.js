@@ -2,7 +2,7 @@
 'use strict';
 
 import {registerBidder} from '../src/adapters/bidderFactory.js';
-import {BANNER} from '../src/mediaTypes.js';
+import {BANNER, VIDEO, NATIVE} from '../src/mediaTypes.js';
 import {ortbConverter} from '../libraries/ortbConverter/converter.js';
 import {config} from '../src/config.js';
 import {triggerPixel} from '../src/utils.js';
@@ -15,85 +15,70 @@ function convertExtensionFields(request) {
   if (request.imp) {
     request.imp.forEach(imp => {
       if (imp.banner?.ext) {
-        const extCopy = {...imp.banner.ext};
-        delete imp.banner.ext;
-        imp.banner['[com.google.doubleclick.banner_ext]'] = extCopy;
+        moveExt(imp.banner, '[com.google.doubleclick.banner_ext]')
       }
       if (imp.ext) {
-        const extCopy = {...imp.ext};
-        delete imp.ext;
-        imp['[com.google.doubleclick.imp]'] = extCopy;
+        moveExt(imp, '[com.google.doubleclick.imp]')
       }
     });
   }
 
   if (request.app?.ext) {
-    const extCopy = {...request.app.ext};
-    delete request.app.ext;
-    request.app['[com.google.doubleclick.app]'] = extCopy;
+    moveExt(request.app, '[com.google.doubleclick.app]')
   }
 
   if (request.site?.ext) {
-    const extCopy = {...request.site.ext};
-    delete request.site.ext;
-    request.site['[com.google.doubleclick.site]'] = extCopy;
+    moveExt(request.site, '[com.google.doubleclick.site]')
   }
 
   if (request.site?.publisher?.ext) {
-    const extCopy = {...request.site.publisher.ext};
-    delete request.site.publisher.ext;
-    request.site.publisher['[com.google.doubleclick.publisher]'] = extCopy;
+    moveExt(request.site.publisher, '[com.google.doubleclick.publisher]')
   }
 
   if (request.user?.ext) {
-    const extCopy = {...request.user.ext};
-    delete request.user.ext;
-    request.user['[com.google.doubleclick.user]'] = extCopy;
+    moveExt(request.user, '[com.google.doubleclick.user]')
   }
 
   if (request.user?.data) {
     request.user.data.forEach(data => {
       if (data.ext) {
-        const extCopy = {...data.ext};
-        delete data.ext;
-        data['[com.google.doubleclick.data]'] = extCopy;
+        moveExt(data, '[com.google.doubleclick.data]')
       }
     });
   }
 
   if (request.device?.ext) {
-    const extCopy = {...request.device.ext};
-    delete request.device.ext;
-    request.device['[com.google.doubleclick.device]'] = extCopy;
+    moveExt(request.device, '[com.google.doubleclick.device]')
   }
 
   if (request.device?.geo?.ext) {
-    const extCopy = {...request.device.geo.ext};
-    delete request.device.geo.ext;
-    request.device.geo['[com.google.doubleclick.geo]'] = extCopy;
+    moveExt(request.device.geo, '[com.google.doubleclick.geo]')
   }
 
   if (request.regs?.ext) {
-    if (request.regs?.ext?.gdpr !== 'undefined') {
+    if (request.regs?.ext?.gdpr !== undefined) {
       request.regs.ext.gdpr = request.regs.ext.gdpr === 1;
     }
 
-    const extCopy = {...request.regs.ext};
-    delete request.regs.ext;
-    request.regs['[com.google.doubleclick.regs]'] = extCopy;
+    moveExt(request.regs, '[com.google.doubleclick.regs]')
   }
 
   if (request.source?.ext) {
-    const extCopy = {...request.source.ext};
-    delete request.source.ext;
-    request.source['[com.google.doubleclick.source]'] = extCopy;
+    moveExt(request.source, '[com.google.doubleclick.source]')
   }
 
   if (request.ext) {
-    const extCopy = {...request.ext};
-    delete request.ext;
-    request['[com.google.doubleclick.bid_request]'] = extCopy;
+    moveExt(request, '[com.google.doubleclick.bid_request]')
   }
+}
+
+function moveExt(obj, newKey) {
+  if (!obj || !obj.ext) {
+    return;
+  }
+  const extCopy = {...obj.ext};
+  delete obj.ext;
+  obj[newKey] = extCopy;
 }
 
 const converter = ortbConverter({
@@ -104,10 +89,10 @@ const converter = ortbConverter({
   },
   imp(buildImp, bidRequest, context) {
     const imp = buildImp(bidRequest, context);
-    if (imp?.banner?.topframe !== 'undefined') {
+    if (imp?.banner?.topframe !== undefined) {
       imp.banner.topframe = imp.banner.topframe === 1;
     }
-    if (imp?.secure !== 'undefined') {
+    if (imp?.secure !== undefined) {
       imp.secure = imp.secure === 1;
     }
     return imp;
@@ -115,15 +100,15 @@ const converter = ortbConverter({
   request(buildRequest, imps, bidderRequest, context) {
     const request = buildRequest(imps, bidderRequest, context);
 
-    if (request?.device?.dnt !== 'undefined') {
+    if (request?.device?.dnt !== undefined) {
       request.device.dnt = request.device.dnt === 1;
     }
 
-    if (request?.device?.sua?.mobile !== 'undefined') {
+    if (request?.device?.sua?.mobile !== undefined) {
       request.device.sua.mobile = request.device.sua.mobile === 1;
     }
 
-    if (request?.test !== 'undefined') {
+    if (request?.test !== undefined) {
       request.test = request.test === 1;
     }
 
@@ -139,11 +124,11 @@ const converter = ortbConverter({
 
 export const spec = {
   code: BIDDER_CODE,
-  supportedMediaTypes: [BANNER],
+  supportedMediaTypes: [BANNER, VIDEO, NATIVE],
   gvlid: GVLID,
 
-  isBidRequestValid: function () {
-    return true
+  isBidRequestValid: function (bid) {
+    return true;
   },
 
   buildRequests: function (bidRequests, bidderRequest) {
