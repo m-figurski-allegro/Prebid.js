@@ -12,6 +12,8 @@ Connects to Allegro's demand sources for banner advertising. This adapter uses t
 # Supported Media Types
 
 - Banner
+- Native
+- Video
 
 # Configuration
 
