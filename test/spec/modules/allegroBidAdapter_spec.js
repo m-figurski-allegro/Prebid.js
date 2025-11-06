@@ -3,7 +3,6 @@ import {spec} from 'modules/allegroBidAdapter.js';
 import {config} from 'src/config.js';
 import sinon from 'sinon';
 
-// Helper to build a basic bidRequest
 function buildBidRequest({bidId = 'bid1', adUnitCode = 'div-1', sizes = [[300, 250]], params = {}, mediaTypes} = {}) {
   return {
     bidId,
@@ -89,23 +88,17 @@ describe('Allegro Bid Adapter', () => {
       const bidderRequest = buildBidderRequest(bidRequests, ortb2);
       const req = spec.buildRequests(bidRequests, bidderRequest);
       const data = req.data;
-      // site.ext moved
+
       expect(data.site.ext).to.equal(undefined);
       expect(data.site['[com.google.doubleclick.site]'].siteCustom).to.equal('val');
-      // publisher.ext moved
       expect(data.site.publisher['[com.google.doubleclick.publisher]'].pubCustom).to.equal('pub');
-      // user.ext moved
       expect(data.user['[com.google.doubleclick.user]'].userCustom).to.equal('usr');
-      // user.data[].ext moved
       expect(data.user.data[0]['[com.google.doubleclick.data]'].dataCustom).to.equal('d1');
-      // device.ext moved & boolean conversions (dnt, sua.mobile)
       expect(data.device['[com.google.doubleclick.device]'].deviceCustom).to.equal('dev');
       expect(data.device.dnt).to.be.a('boolean');
       expect(data.device.sua.mobile).to.equal(true);
-      // regs.ext moved + gdpr boolean conversion
       expect(data.regs['[com.google.doubleclick.regs]'].other).to.equal('x');
       expect(data.regs['[com.google.doubleclick.regs]'].gdpr).to.equal(true);
-      // request.ext moved
       expect(data['[com.google.doubleclick.bid_request]'].requestCustom).to.equal('req');
     });
 
