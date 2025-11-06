@@ -128,7 +128,7 @@ export const spec = {
   gvlid: GVLID,
 
   isBidRequestValid: function (bid) {
-    return true;
+    return !!(bid);
   },
 
   buildRequests: function (bidRequests, bidderRequest) {

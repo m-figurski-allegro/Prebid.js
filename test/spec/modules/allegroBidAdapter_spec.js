@@ -43,9 +43,12 @@ describe('Allegro Bid Adapter', () => {
   });
 
   describe('isBidRequestValid', () => {
-    it('returns true for any bidRequest (always valid)', () => {
+    it('returns true for not undefined bidRequest ', () => {
       expect(spec.isBidRequestValid({})).to.equal(true);
       expect(spec.isBidRequestValid(buildBidRequest({}))).to.equal(true);
+    });
+    it('returns false for undefined bidRequest', () => {
+      expect(spec.isBidRequestValid(undefined)).to.equal(false);
     });
   });
 
